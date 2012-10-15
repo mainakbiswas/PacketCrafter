@@ -64,6 +64,7 @@ JNIEXPORT jint JNICALL Java_com_iitd_socket_UdpSocketX_sendUdpPacket
 		__android_log_print(ANDROID_LOG_INFO, "MYPROG", "ajob errno = %d, %s", s, strerror(s));
 		//socket creation failed, may be because of non-root privileges
 		perror("Failed to create socket");
+		(*env)->ReleaseStringUTFChars(env,dataToSend, datasend);
 		return -1;
 	}
 	
@@ -222,12 +223,15 @@ JNIEXPORT jint JNICALL Java_com_iitd_socket_UdpSocketX_sendUdpPacket
 	{
 		__android_log_print(ANDROID_LOG_INFO, "MYPROG", "errno = %d, %s", abc, strerror(abc));
 		perror("Error setting IP_HDRINCL");
+		(*env)->ReleaseStringUTFChars(env,dataToSend, datasend);
 		return -2;
 	}
 	
 	if (sendto (s, datagram, iph->tot_len ,	0, (struct sockaddr *) &sin, sizeof (sin)) < 0)
 	{
 		perror("sendto failed");
+		(*env)->ReleaseStringUTFChars(env,dataToSend, datasend);
+		return -3;
 	}
 	
 	(*env)->ReleaseStringUTFChars(env,dataToSend, datasend);
